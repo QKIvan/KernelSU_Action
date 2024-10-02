@@ -56,6 +56,7 @@ jobs:
             KSU_EXPECTED_SIZE
             KSU_EXPECTED_HASH
             REMOVE_UNUSED_PACKAGES
+            UPLOAD_TO_RELEASES
         )
 
         for CONFIG in "${CONFIG_LIST[@]}"; do
@@ -358,3 +359,10 @@ jobs:
       with:
         name: boot${{ env.LOCALVERSION }}${{ env.UPLOADNAME }}-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
         path: kernel_workspace/boot.img
+
+    - name: Upload to Github Releases
+      if: env.UPLOAD_TO_RELEASES == 'true'
+      uses: ncipollo/release-action@main
+      with:
+          artifacts: ${{ github.workspace }}/kernel_workspace/boot.img,${{ github.workspace }}/kernel_workspace/android-kernel/out/arch/${{ env.ARCH }}/boot/dtbo.img,${{ github.workspace }}/kernel_workspace/AnyKernel3/*
+          token: ${{ secrets.GITHUB_TOKEN }}
